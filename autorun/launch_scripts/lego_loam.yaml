@@ -1,0 +1,11 @@
+session_name: lego_loam_session
+suppress_history: true
+windows:
+- window_name: lego_loam
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_lego_loam/
+    - source devel/setup.bash
+  panes:
+    - roslaunch lego_loam benchmark.launch
+

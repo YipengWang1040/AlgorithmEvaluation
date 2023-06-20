@@ -1,0 +1,12 @@
+session_name: color_loam_session
+suppress_history: true
+windows:
+- window_name: color_loam
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_color_loam_eval/
+    - source devel/setup.bash
+    - export ROS_LOG_DIR=/home/arcs/cw_color_loam_eval/logs
+  panes:
+    - roslaunch color_loam benchmark.launch 
+

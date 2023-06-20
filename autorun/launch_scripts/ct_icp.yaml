@@ -1,0 +1,11 @@
+session_name: ct_icp_session
+suppress_history: true
+windows:
+- window_name: ct_icp
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_ct_icp/
+    - source devel/setup.bash
+  panes:
+    - roslaunch ct_icp_odometry benchmark.launch
+
