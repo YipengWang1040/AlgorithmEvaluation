@@ -171,7 +171,7 @@ def main():
                         result_errors[algorithm][dataset][sequence]["rpe_rotation"]=-1
 
 
-        with open(args.directory+"ate_translation_mean.csv", 'w') as f:
+        with open(args.directory+"/ate_translation_mean.csv", 'w') as f:
             f.write("{:>15s},{:>30s}".format("datasets", "sequences"))
             for algorithm in results.keys():
                 f.write(",{:>30s}".format(algorithm))
@@ -184,7 +184,7 @@ def main():
                         f.write(",{:30.3f}".format(result_errors[algorithm][dataset][sequence]["ate_translation"]["mean"]))
                     f.write("\n")
 
-        with open(args.directory+"ate_translation_var.csv", 'w') as f:
+        with open(args.directory+"/ate_translation_var.csv", 'w') as f:
             f.write("{:>15s},{:>30s}".format("datasets", "sequences"))
             for algorithm in results.keys():
                 f.write(",{:>30s}".format(algorithm))
@@ -197,7 +197,7 @@ def main():
                         f.write(",{:30.3f}".format(result_errors[algorithm][dataset][sequence]["ate_translation"]["var"]))
                     f.write("\n")
 
-        with open(args.directory+"ate_translation_median.csv", 'w') as f:
+        with open(args.directory+"/ate_translation_median.csv", 'w') as f:
             f.write("{:>15s},{:>30s}".format("datasets", "sequences"))
             for algorithm in results.keys():
                 f.write(",{:>30s}".format(algorithm))
@@ -210,7 +210,7 @@ def main():
                         f.write(",{:30.3f}".format(result_errors[algorithm][dataset][sequence]["ate_translation"]["median"]))
                     f.write("\n")
 
-        with open(args.directory+"rpe_translation.csv", 'w') as f:
+        with open(args.directory+"/rpe_translation.csv", 'w') as f:
             f.write("{:>15s},{:>30s}".format("datasets", "sequences"))
             for algorithm in results.keys():
                 f.write(",{:>30s}".format(algorithm))
@@ -224,7 +224,7 @@ def main():
                     f.write("\n")
 
 
-        with open(args.directory+"rpe_rotation.csv", 'w') as f:
+        with open(args.directory+"/rpe_rotation.csv", 'w') as f:
             f.write("{:>15s},{:>30s}".format("datasets", "sequences"))
             for algorithm in results.keys():
                 f.write(",{:>30s}".format(algorithm))
