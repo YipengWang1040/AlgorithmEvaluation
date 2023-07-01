@@ -1,0 +1,10 @@
+session_name: kiss_icp_session
+suppress_history: true
+windows:
+- window_name: kiss_icp
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_kiss_icp/
+    - source devel/setup.bash
+  panes:
+    - roslaunch kiss_icp odometry_eval.launch 

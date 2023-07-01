@@ -1,0 +1,10 @@
+session_name: hdl_graph_slam_session
+suppress_history: true
+windows:
+- window_name: hdl_graph_slam
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_hdl/
+    - source devel/setup.bash
+  panes:
+    - roslaunch hdl_graph_slam hdl_graph_slam_eval.launch

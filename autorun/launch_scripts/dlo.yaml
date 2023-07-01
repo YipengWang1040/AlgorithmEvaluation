@@ -1,0 +1,11 @@
+session_name: dlo_session
+suppress_history: true
+windows:
+- window_name: dlo
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_dlo/
+    - source devel/setup.bash
+  panes:
+    - roslaunch direct_lidar_odometry benchmark.launch pointcloud_topic:=/velodyne_points
+

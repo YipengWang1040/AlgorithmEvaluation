@@ -1,0 +1,11 @@
+session_name: aloam_session
+suppress_history: true
+windows:
+- window_name: aloam
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_aloam/
+    - source devel/setup.bash
+  panes:
+    - roslaunch aloam_velodyne aloam_velodyne_VLP_16_eval.launch
+

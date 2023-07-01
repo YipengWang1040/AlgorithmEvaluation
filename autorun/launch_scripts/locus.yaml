@@ -1,0 +1,14 @@
+session_name: locus_session
+suppress_history: true
+windows:
+- window_name: locus
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_locus/
+    - source devel/setup.bash
+    - rosparam set /use_sim_time true
+  panes:
+    - rosrun tf static_transform_publisher 0 0 0 0 0 0 1 spot1/base_link velodyne 100
+    - roslaunch aloam_velodyne aloam_velodyne_VLP_16_eval.launch
+    - roslaunch locus locus.launch robot_namespace:=spot1 number_of_velodynes:=1;
+

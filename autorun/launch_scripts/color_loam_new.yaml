@@ -1,0 +1,11 @@
+session_name: color_loam_new_session
+suppress_history: true
+windows:
+- window_name: color_loam_new
+  layout: tiled
+  shell_command_before:
+    - cd ~/cw_color_loam_new/
+    - source devel/setup.bash
+  panes:
+    - roslaunch color_loam benchmark.launch 
+
