@@ -228,8 +228,9 @@ def main():
 
         try:
             total_time, time_map = estimate_time_usage(DATASETS, datasets, waiting_time)
-        except:
-            print("Corrupted dataset cache. Please remove \"cached_datasets.json\" and try again.")
+        except Exception as e:
+            print(e)
+            print("Corrupted dataset cache or wrong defination. Please check definations in \"definations.py\", remove \"cached_datasets.json\" and try again.")
             return -1
         print("Estimated running time is {}{:.3f}{} seconds".format(ORANGE,total_time * len(algorithms),RESET)) 
 

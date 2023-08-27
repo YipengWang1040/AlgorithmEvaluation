@@ -160,7 +160,7 @@ def create_completor(gt):
     return completor
 
 def visualize(results, gt):
-    rospy.init_node('results_visualizer')
+    rospy.init_node('results_visualizer', disable_signals=True)
 
     # initialize publishers
     publishers={}

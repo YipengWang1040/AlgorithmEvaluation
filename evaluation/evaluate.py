@@ -117,6 +117,14 @@ def parse_results(result_dir, frame_id = "world"):
 
     return ret, gt
 
+def finished_factor(path:Path, gt:Path):
+    path_time = path.poses[-1].header.stamp.to_sec() - path.poses[0].header.stamp.to_sec()
+    gt_time = gt.poses[-1].header.stamp.to_sec() - gt.poses[0].header.stamp.to_sec()
+    
+    if((gt_time - path_time)>5):
+        return -1
+    
+    return 1
 
 def main():
     parser = argparse.ArgumentParser("Evaluate results of lidar odometry")
@@ -148,7 +156,10 @@ def main():
                 result_errors[algorithm][dataset]={}
                 for sequence in results[algorithm][dataset].keys():
                     path = results[algorithm][dataset][sequence]
-                    if(len(path.poses)==0):
+                    rot, trans, trans_error = ate(path, gt[dataset][sequence], True)
+                    samples, sum_dist_error, sum_rotation_error = rpe(path, gt[dataset][sequence])
+
+                    if(len(path.poses)==0 or samples==0):
                         result_errors[algorithm][dataset][sequence]={}
                         result_errors[algorithm][dataset][sequence]["ate_translation"]={}
                         result_errors[algorithm][dataset][sequence]["ate_translation"]["mean"]=-1
@@ -157,16 +168,16 @@ def main():
                         result_errors[algorithm][dataset][sequence]["rpe_translation"]=-1
                         result_errors[algorithm][dataset][sequence]["rpe_rotation"]=-1
                         continue
-                    rot, trans, trans_error = ate(path, gt[dataset][sequence], True)
-                    samples, sum_dist_error, sum_rotation_error = rpe(path, gt[dataset][sequence])
+
+                    f = finished_factor(path, gt[dataset][sequence])
 
                     result_errors[algorithm][dataset][sequence]={}
                     result_errors[algorithm][dataset][sequence]["ate_translation"]={}
-                    result_errors[algorithm][dataset][sequence]["ate_translation"]["mean"]=np.mean(trans_error)
-                    result_errors[algorithm][dataset][sequence]["ate_translation"]["var"]=np.var(trans_error)
-                    result_errors[algorithm][dataset][sequence]["ate_translation"]["median"]=np.median(trans_error)
-                    result_errors[algorithm][dataset][sequence]["rpe_translation"]=sum_dist_error / samples 
-                    result_errors[algorithm][dataset][sequence]["rpe_rotation"]=sum_rotation_error / samples 
+                    result_errors[algorithm][dataset][sequence]["ate_translation"]["mean"]=np.mean(trans_error) * f
+                    result_errors[algorithm][dataset][sequence]["ate_translation"]["var"]=np.var(trans_error) * f
+                    result_errors[algorithm][dataset][sequence]["ate_translation"]["median"]=np.median(trans_error) * f
+                    result_errors[algorithm][dataset][sequence]["rpe_translation"]=sum_dist_error / samples  * f
+                    result_errors[algorithm][dataset][sequence]["rpe_rotation"]=sum_rotation_error / samples  * f
                     if(dataset in has_orientation):
                         result_errors[algorithm][dataset][sequence]["rpe_rotation"]=-1
 

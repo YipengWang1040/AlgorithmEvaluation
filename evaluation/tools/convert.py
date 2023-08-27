@@ -58,8 +58,12 @@ def main():
     parser = argparse.ArgumentParser("Publish navsatfix as path. The input is a folder of sequences, where each sequence is in a folder.")
     parser.add_argument("directory", help="directory to the folders of rosbags")
     parser.add_argument("output_directory", help="directory to the output")
+    parser.add_argument("--prefix", help="directory to the output")
     parser.add_argument("--ignore", help="ignoring non-rtk-fix segments", action="store_true")
     args = parser.parse_args()
+    prefix=""
+    if(args.prefix is not None):
+        prefix=args.prefix
     with os.scandir(args.directory) as dirs:
         for dir in dirs:
             if(os.path.isdir(dir)):
@@ -67,7 +71,8 @@ def main():
                 with os.scandir(dir) as files:
                     for entry in files:
                         if(entry.name.endswith(".bag")):
-                            bags.append(entry.name)
+                            if(entry.name.startswith(prefix)):
+                                bags.append(entry.name)
                             
                 bags.sort()
 
