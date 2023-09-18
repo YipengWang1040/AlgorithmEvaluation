@@ -44,21 +44,21 @@ def navsetfix2path(msgs, ignore=False)->Path:
 
     return path, ignored
 
-def export_ground_truth(filename, path:Path, topic="/gt_odometry"):
+def export_ground_truth(filename, path:Path):
     bag = rosbag.Bag(filename, 'w')
     p:PoseStamped
     for p in path.poses:
         odom = Odometry()
         odom.pose.pose = p.pose
         odom.header = p.header
-        bag.write(topic, odom)
+        bag.write("/gt_odometry",odom)
     bag.close()
 
 def main():
     parser = argparse.ArgumentParser("Publish navsatfix as path. The input is a folder of sequences, where each sequence is in a folder.")
     parser.add_argument("directory", help="directory to the folders of rosbags")
     parser.add_argument("output_directory", help="directory to the output")
-    parser.add_argument("--prefix", help="prefix to filter the input bags")
+    parser.add_argument("--prefix", help="directory to the output")
     parser.add_argument("--ignore", help="ignoring non-rtk-fix segments", action="store_true")
     args = parser.parse_args()
     prefix=""
@@ -66,22 +66,12 @@ def main():
         prefix=args.prefix
     with os.scandir(args.directory) as dirs:
         for dir in dirs:
-            if(os.path.isdir(dir)):
-                bags = []
-                with os.scandir(dir) as files:
-                    for entry in files:
-                        if(entry.name.endswith(".bag")):
-                            if(entry.name.startswith(prefix)):
-                                bags.append(entry.name)
-                            
-                bags.sort()
-
+            if(dir.name.endswith(".bag")):
                 # read all messages of navsatfix
                 msgs = []
-                for bag_path in bags:
-                    bag=rosbag.Bag(dir.path+'/'+bag_path,'r')
-                    for topic, msg, t in bag.read_messages(topics="/piksi/navsatfix_best_fix"):
-                        msgs.append(msg)
+                bag=rosbag.Bag(dir.name,'r')
+                for topic, msg, t in bag.read_messages(topics="/gps/fix"):
+                    msgs.append(msg)
 
                 print("Found {} messages in given rosbags. Start converting...".format(len(msgs)))
                 
