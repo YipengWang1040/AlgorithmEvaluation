@@ -21,7 +21,7 @@ def transform_pose(T, pose:Pose)->Pose:
     T2=tf.transformations.quaternion_matrix([pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w])
     T2[0:3,3]=[pose.position.x, pose.position.y, pose.position.z]
     
-    result=T@T2
+    result=T2@T
     result[0:3,0:3]=result[0:3,0:3]@T[0:3,0:3].T
     result_p=result[0:3,3]
     result_q=tf.transformations.quaternion_from_matrix(result)
@@ -35,7 +35,7 @@ def transform_pose(T, pose:Pose)->Pose:
     ret.orientation.w=result_q[3]
     return ret
 
-def bag2path(path, frame_id):
+def bag2path(path, frame_id, extrinsic=None):
     print("reading bag from \"{}\"...".format(path))
     if(os.path.isdir(path)):
         bags=[f for f in os.listdir(path) if f.endswith('.bag')]
@@ -55,18 +55,12 @@ def bag2path(path, frame_id):
                 max_topic=topic
     odom_topic=max_topic
 
-    rotation=[0,0,0,1]
-    translation=[0,0,0]
-    # # coordinate transform (rotation only)
-    # if(os.path.exists(path+'/../coord_fix.yaml')):
-    #     with open(path+'/../coord_fix.yaml') as f:
-    #         config=yaml.load(f,Loader=yaml.SafeLoader)
-    #         if(config['rotation']):
-    #             rotation=config['rotation']
-    #         if(config['translation']):
-    #             translation=config['translation']
-    T=tf.transformations.quaternion_matrix(rotation)
-    T[0:3,3]=translation
+    T = np.identity(4)
+    if(extrinsic is not None):
+        rotation=extrinsic[0:4]
+        translation=extrinsic[4:7]
+        T=tf.transformations.quaternion_matrix(rotation)
+        T[0:3,3]=translation
 
     path=Path()
     for topic, msg, t in bag.read_messages(topics=odom_topic):
@@ -74,7 +68,9 @@ def bag2path(path, frame_id):
         cur_pose.header.stamp=msg.header.stamp
         cur_pose.header.frame_id=frame_id
         cur_pose.pose=msg.pose.pose
-        cur_pose.pose=transform_pose(T,cur_pose.pose)
+        
+        if(extrinsic is not None):
+            cur_pose.pose=transform_pose(T,cur_pose.pose)
 
         path.header=cur_pose.header
         path.poses.append(cur_pose)
@@ -101,7 +97,10 @@ def parse_results(result_dir, frame_id = "world"):
             dataset_dir = algorithm_dir + '/' + dataset_name
             for sequence in dataset["sequences"]:
                 sequence_dir = dataset_dir + '/' + sequence
-                ret[algorithm][dataset_name][sequence] = bag2path(sequence_dir, frame_id)
+                if("extrinsic" in dataset):
+                    ret[algorithm][dataset_name][sequence] = bag2path(sequence_dir, frame_id, dataset["extrinsic"])
+                else:
+                    ret[algorithm][dataset_name][sequence] = bag2path(sequence_dir, frame_id)
     
     # ground truth
     gt = {}
